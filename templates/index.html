@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DLSU-D CSO Attendance System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo-container">
+                <!-- You can replace this with an actual logo -->
+                <div class="logo-placeholder">DLSU-D CSO</div>
+            </div>
+            <h1>Attendance System</h1>
+        </div>
+
+        <div class="main-content">
+            <div class="input-section">
+                <label for="idNumber">ID Number</label>
+                <input 
+                    type="text" 
+                    id="idNumber" 
+                    placeholder="Enter your ID Number" 
+                    maxlength="20"
+                    autocomplete="off"
+                >
+            </div>
+
+            <div class="button-section">
+                <button id="timeInBtn" class="btn btn-primary">Time In</button>
+                <button id="timeOutBtn" class="btn btn-secondary">Time Out</button>
+            </div>
+
+            <div id="messageArea" class="message-area hidden">
+                <p id="messageText"></p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <a href="/api/export-dtr" class="export-link" title="Export DTR">Export DTR</a>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
