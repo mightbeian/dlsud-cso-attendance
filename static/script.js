@@ -29,25 +29,36 @@ function clearInput() {
     idNumberInput.focus();
 }
 
-// API call helper
+// API call helper with better error handling
 async function apiCall(endpoint, data) {
     try {
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json'
             },
             body: JSON.stringify(data)
         });
         
+        // Check if response is JSON
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            throw new Error('Server returned non-JSON response. Please check if the server is running correctly.');
+        }
+        
         const result = await response.json();
         
         if (!response.ok) {
-            throw new Error(result.error || 'An error occurred');
+            throw new Error(result.error || `Server error: ${response.status}`);
         }
         
         return result;
     } catch (error) {
+        // Handle network errors
+        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+            throw new Error('Cannot connect to server. Please ensure the application is running.');
+        }
         throw error;
     }
 }
@@ -72,7 +83,8 @@ timeInBtn.addEventListener('click', async () => {
             clearInput();
         }
     } catch (error) {
-        showMessage(error.message, 'error');
+        console.error('Time In Error:', error);
+        showMessage(error.message || 'An error occurred during time in', 'error');
     } finally {
         setButtonsDisabled(false);
     }
@@ -97,7 +109,8 @@ timeOutBtn.addEventListener('click', async () => {
             clearInput();
         }
     } catch (error) {
-        showMessage(error.message, 'error');
+        console.error('Time Out Error:', error);
+        showMessage(error.message || 'An error occurred during time out', 'error');
     } finally {
         setButtonsDisabled(false);
     }
@@ -114,4 +127,11 @@ idNumberInput.addEventListener('keypress', (e) => {
 // Focus input on page load
 window.addEventListener('load', () => {
     idNumberInput.focus();
+});
+
+// Add visibility change handler to refocus input
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+        idNumberInput.focus();
+    }
 });
