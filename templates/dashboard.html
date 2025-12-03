@@ -3,181 +3,346 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DLSU-D CSO Attendance Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>DLSU-D CSO Attendance System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Top Bar -->
-    <div class="topbar">
-        <div class="topbar-left">
-            <div class="logo">DLSU-D CSO</div>
-            <h1>Attendance System</h1>
-        </div>
-        <div class="topbar-right">
-            <div class="search-container">
-                <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Search users..." autocomplete="off">
-                <div id="searchResults" class="search-results hidden"></div>
+    <!-- Top Navigation Bar -->
+    <header class="top-bar">
+        <div class="logo-section">
+            <div class="logo-icon">
+                <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="20" cy="20" r="18" stroke="#00693C" stroke-width="3"/>
+                    <path d="M12 20L18 26L28 14" stroke="#00693C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
             </div>
-            <button id="adminBtn" class="admin-btn">
-                <i class="fas fa-user-shield"></i> Admin
-            </button>
+            <div class="logo-text">
+                <h1>DLSU-D CSO</h1>
+                <span>Attendance System</span>
+            </div>
         </div>
-    </div>
+        
+        <div class="search-section">
+            <div class="search-box">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="M21 21l-4.35-4.35"/>
+                </svg>
+                <input type="text" id="searchInput" placeholder="Search student by name or ID...">
+            </div>
+        </div>
+        
+        <div class="admin-section">
+            <div class="datetime-display">
+                <span id="currentDate"></span>
+                <span id="currentTime"></span>
+            </div>
+            <div class="admin-dropdown">
+                <button class="admin-btn" id="adminBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    </svg>
+                    Admin
+                    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </button>
+                <div class="dropdown-menu" id="adminMenu">
+                    <button onclick="openExportModal()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        Export to Excel
+                    </button>
+                    <button onclick="openManageUsersModal()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                        Manage Users
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
 
-    <!-- Main Content -->
     <div class="main-container">
-        <!-- Sidebar -->
-        <div class="sidebar">
+        <!-- Sidebar - Active Users -->
+        <aside class="sidebar">
             <div class="sidebar-header">
-                <h2>Active Users</h2>
-                <span id="activeCount" class="badge">0</span>
+                <h2>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <circle cx="12" cy="12" r="3" fill="#00693C"/>
+                    </svg>
+                    Currently Active
+                </h2>
+                <span class="active-count" id="activeCount">0</span>
             </div>
             
-            <div id="activeUsersContainer" class="active-users-list">
+            <div class="active-users-list" id="activeUsersList">
                 {% for committee in committees %}
-                <div class="committee-section">
-                    <div class="committee-header">
-                        <h3>{{ committee }}</h3>
-                        <span class="committee-count" data-committee="{{ committee }}">0</span>
-                    </div>
-                    <div class="committee-users" id="committee-{{ committee|replace(' ', '-')|lower }}">
-                        <p class="no-users">No active users</p>
-                    </div>
+                <div class="committee-section" data-committee="{{ committee }}">
+                    <h3 class="committee-title">{{ committee }}</h3>
+                    <ul class="user-list"></ul>
                 </div>
                 {% endfor %}
             </div>
-        </div>
-
-        <!-- Main Content Area -->
-        <div class="content-area">
-            <!-- User Photo Display -->
-            <div id="userPhotoContainer" class="user-photo-container hidden">
-                <img id="userPhoto" src="" alt="User Photo">
-                <div class="photo-placeholder">
-                    <i class="fas fa-user"></i>
-                </div>
+            
+            <div class="sidebar-footer">
+                <button class="add-user-btn" onclick="openAddUserModal()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="16"/>
+                        <line x1="8" y1="12" x2="16" y2="12"/>
+                    </svg>
+                    Add / Remove User
+                </button>
             </div>
+        </aside>
 
-            <!-- Attendance Input Section -->
-            <div class="attendance-section">
-                <div class="input-group">
-                    <label for="idNumber">ID Number</label>
-                    <input 
-                        type="text" 
-                        id="idNumber" 
-                        placeholder="Enter ID Number and press Enter" 
-                        maxlength="20"
-                        autocomplete="off"
-                        autofocus
-                    >
+        <!-- Main Content - Scanner -->
+        <main class="main-content">
+            <div class="scanner-card">
+                <div class="photo-frame" id="photoFrame">
+                    <div class="photo-placeholder" id="photoPlaceholder">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </div>
+                    <img src="" alt="User Photo" id="userPhoto" class="user-photo hidden">
                 </div>
-
-                <!-- Message Area -->
-                <div id="messageArea" class="message-area hidden">
-                    <p id="messageText"></p>
-                </div>
-            </div>
-
-            <!-- Statistics Cards -->
-            <div class="stats-container">
-                <div class="stat-card">
-                    <i class="fas fa-users"></i>
-                    <div class="stat-info">
-                        <h3 id="totalUsers">0</h3>
-                        <p>Total Users</p>
+                
+                <div class="scanner-content">
+                    <h2 class="scanner-title">Scan Your ID</h2>
+                    <p class="scanner-subtitle">Enter or scan your Student ID number</p>
+                    
+                    <div class="input-wrapper">
+                        <input type="text" 
+                               id="idInput" 
+                               class="id-input" 
+                               placeholder="Enter ID Number"
+                               autocomplete="off"
+                               autofocus>
+                        <div class="input-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="16" rx="2"/>
+                                <line x1="7" y1="8" x2="17" y2="8"/>
+                                <line x1="7" y1="12" x2="12" y2="12"/>
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <div class="status-message" id="statusMessage">
+                        <p>Ready to scan</p>
+                    </div>
+                    
+                    <div class="scan-indicator" id="scanIndicator">
+                        <span class="pulse"></span>
+                        <span>Press Enter to confirm</span>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <i class="fas fa-user-check"></i>
-                    <div class="stat-info">
-                        <h3 id="loggedInToday">0</h3>
-                        <p>Logged In Today</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-clock"></i>
-                    <div class="stat-info">
-                        <h3 id="currentTime">--:--</h3>
-                        <p>Current Time</p>
-                    </div>
-                </div>
             </div>
-        </div>
+        </main>
     </div>
 
-    <!-- Admin Modal -->
-    <div id="adminModal" class="modal hidden">
+    <!-- Add/Edit User Modal -->
+    <div class="modal" id="userModal">
+        <div class="modal-overlay" onclick="closeUserModal()"></div>
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Admin Panel</h2>
-                <span class="close">&times;</span>
+                <h2 id="userModalTitle">Add New User</h2>
+                <button class="close-btn" onclick="closeUserModal()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <form id="userForm" enctype="multipart/form-data">
+                <input type="hidden" id="editUserId" value="">
+                
+                <div class="form-group">
+                    <label for="formStudentId">Student ID *</label>
+                    <input type="text" id="formStudentId" name="student_id" required placeholder="e.g., 202231292">
+                </div>
+                
+                <div class="form-group">
+                    <label for="formFullName">Full Name *</label>
+                    <input type="text" id="formFullName" name="full_name" required placeholder="e.g., Juan Dela Cruz">
+                </div>
+                
+                <div class="form-group">
+                    <label for="formCommittee">Committee *</label>
+                    <select id="formCommittee" name="committee" required>
+                        <option value="">Select Committee</option>
+                        {% for committee in committees %}
+                        <option value="{{ committee }}">{{ committee }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="formBirthday">Birthday (MM-DD)</label>
+                    <input type="text" id="formBirthday" name="birthday" placeholder="e.g., 03-15" pattern="\d{2}-\d{2}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="formPhoto">Photo</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="formPhoto" name="photo" accept="image/*">
+                        <div class="file-input-display">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <circle cx="8.5" cy="8.5" r="1.5"/>
+                                <polyline points="21 15 16 10 5 21"/>
+                            </svg>
+                            <span id="photoFileName">Choose a file...</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeUserModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="userFormSubmit">Add User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Manage Users Modal -->
+    <div class="modal" id="manageUsersModal">
+        <div class="modal-overlay" onclick="closeManageUsersModal()"></div>
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>Manage Users</h2>
+                <button class="close-btn" onclick="closeManageUsersModal()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
             </div>
             <div class="modal-body">
-                <div class="admin-tabs">
-                    <button class="tab-btn active" data-tab="export">Export DTR</button>
-                    <button class="tab-btn" data-tab="add-user">Add User</button>
-                    <button class="tab-btn" data-tab="manage-users">Manage Users</button>
-                </div>
-
-                <!-- Export Tab -->
-                <div id="export-tab" class="tab-content active">
-                    <button id="exportBtn" class="primary-btn">
-                        <i class="fas fa-file-excel"></i> Export DTR to Excel
-                    </button>
-                    <p class="tab-description">Download attendance records in Excel format</p>
-                </div>
-
-                <!-- Add User Tab -->
-                <div id="add-user-tab" class="tab-content">
-                    <form id="addUserForm">
-                        <div class="form-group">
-                            <label for="newIdNumber">ID Number *</label>
-                            <input type="text" id="newIdNumber" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="newFullName">Full Name *</label>
-                            <input type="text" id="newFullName" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="newBirthday">Birthday (MM-DD) *</label>
-                            <input type="text" id="newBirthday" placeholder="01-15" pattern="\d{2}-\d{2}" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="newCommittee">Committee *</label>
-                            <select id="newCommittee" required>
-                                <option value="">Select Committee</option>
-                                {% for committee in committees %}
-                                <option value="{{ committee }}">{{ committee }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="newPhoto">Photo (optional)</label>
-                            <input type="file" id="newPhoto" accept="image/*">
-                            <small>Max 5MB. Formats: JPG, PNG, GIF</small>
-                        </div>
-                        <button type="submit" class="primary-btn">
-                            <i class="fas fa-user-plus"></i> Add User
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Manage Users Tab -->
-                <div id="manage-users-tab" class="tab-content">
+                <div class="manage-users-header">
                     <div class="search-box">
-                        <input type="text" id="manageSearchInput" placeholder="Search users to manage...">
-                        <i class="fas fa-search"></i>
+                        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="M21 21l-4.35-4.35"/>
+                        </svg>
+                        <input type="text" id="manageSearchInput" placeholder="Search users...">
                     </div>
-                    <div id="usersList" class="users-list">
-                        <p class="loading">Loading users...</p>
+                    <button class="btn btn-primary" onclick="openAddUserModal()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                        Add User
+                    </button>
+                </div>
+                <div class="users-table-container">
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>Photo</th>
+                                <th>Student ID</th>
+                                <th>Name</th>
+                                <th>Committee</th>
+                                <th>Birthday</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div class="modal" id="exportModal">
+        <div class="modal-overlay" onclick="closeExportModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Export Data</h2>
+                <button class="close-btn" onclick="closeExportModal()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="export-options">
+                    <div class="export-option">
+                        <h3>Daily Time Record (DTR)</h3>
+                        <p>Export attendance records with time in/out and total hours.</p>
+                        <div class="date-range">
+                            <div class="form-group">
+                                <label for="startDate">Start Date</label>
+                                <input type="date" id="startDate">
+                            </div>
+                            <div class="form-group">
+                                <label for="endDate">End Date</label>
+                                <input type="date" id="endDate">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="exportDTR()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            Export DTR
+                        </button>
+                    </div>
+                    
+                    <div class="export-divider"></div>
+                    
+                    <div class="export-option">
+                        <h3>User Roster</h3>
+                        <p>Export complete list of all registered users.</p>
+                        <button class="btn btn-secondary" onclick="exportRoster()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                            Export Roster
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+    <!-- Search Results Dropdown -->
+    <div class="search-results" id="searchResults">
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <div class="toast-content">
+            <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            <span class="toast-message" id="toastMessage">Success!</span>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
