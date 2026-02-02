@@ -16,6 +16,7 @@ class User(db.Model):
     
     # Relationship
     attendance_records = db.relationship('Attendance', backref='user', lazy=True, cascade='all, delete-orphan')
+    duty_alerts = db.relationship('DutyAlert', backref='user', lazy=True, cascade='all, delete-orphan')
     
     def __repr__(self):
         return f'<User {self.id_number} - {self.full_name}>'
@@ -47,4 +48,25 @@ class Attendance(db.Model):
             'user_id': self.user_id,
             'timestamp': self.timestamp.strftime('%Y-%m-%d %I:%M:%S %p'),
             'event_type': self.event_type
+        }
+
+class DutyAlert(db.Model):
+    __tablename__ = 'duty_alerts'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    week_start = db.Column(db.Date, nullable=False)  # Monday of the week
+    dismissed = db.Column(db.Boolean, default=False)  # If alert was dismissed
+    dismissed_at = db.Column(db.DateTime, nullable=True)
+    
+    def __repr__(self):
+        return f'<DutyAlert {self.user_id} - Week {self.week_start}>'
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'week_start': self.week_start.strftime('%Y-%m-%d'),
+            'dismissed': self.dismissed,
+            'dismissed_at': self.dismissed_at.strftime('%Y-%m-%d %H:%M:%S') if self.dismissed_at else None
         }
